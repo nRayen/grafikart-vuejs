@@ -44,14 +44,16 @@ const handleSubmit = () => {
   </form>
 
   <h2>Tâches</h2>
-  <ul>
+  <ul v-if="todolist.length">
     <template v-for="todo in todolist" :key="`todo-${todo.date}-${todo.title}`">
       <li v-if="todo.completed == false || todo.completed && showCompleted">
         <input @change="sortList" v-model="todo.completed" type="checkbox" :name="`todo-${todo.date}-${todo.title}`" :id="`todo-${todo.date}-${todo.title}`">
         <label :for="`todo-${todo.date}-${todo.title}`" :style="{textDecoration: todo.completed ? 'line-through' : ''}">{{ todo.title }}</label>
+        <button @click="todolist = todolist.filter((t) => t != todo)">Supprimer</button>
       </li>
     </template>
   </ul>
+  <p v-else>Vous n'avez aucune tâche en cours</p>
   <input v-model="showCompleted" type="checkbox" id="toggleDoneTodo"/>
   <label  for="toggleDoneTodo">Voir les tâches complétées</label>
 </template>
