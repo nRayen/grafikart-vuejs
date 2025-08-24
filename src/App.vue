@@ -1,64 +1,59 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-const count = ref(0);
-const moviename = ref('')
-const movieduration = ref(0)
-const movies = ref([
+const addtask = ref('')
+const showCompleted = ref(true)
+const todolist = ref([
   {
-    name:'Matrix',
-    duration: 320
+    title: "Tache 1",
+    completed: false,
+    date: new Date()
   },
   {
-    name:'Lilo & Stitch',
-    duration: 190
+    title: "Tache 2",
+    completed: false,
+    date: new Date()
   },
   {
-    name:'Titanic',
-    duration: 120
+    title: "Tache 3",
+    completed: false,
+    date: new Date()
   }
 ])
 
-const increment = () => {
-  count.value++
-}
-const decrement = () => {
-  count.value--
+const sortList = () => {
+  todolist.value = todolist.value.sort((a,b) => (a.completed === b.completed)? 0 : b.completed? -1 : 1)
 }
 
-const deleteMovie = (movie : {name: string, duration: number}) => {
-  movies.value = movies.value.filter((m) => m.name != movie.name)
-}
-
-const sortMovies = () => {
-  movies.value.sort((a,b) => a.duration > b.duration ? 1 : -1)
-}
-
-const handleAddMovie = () => {
-  movies.value.push({name: moviename.value, duration: movieduration.value})
-  moviename.value = ''
-  movieduration.value = 0
+const handleSubmit = () => {
+  todolist.value.push({
+    title: addtask.value,
+    completed: false,
+    date: new Date()
+  })
+  addtask.value = ""
+  sortList()
 }
 </script>
 
 <template>
-  <p :id="`p-${count}`">Compteur : {{ count }}</p>
-  <button @click="increment">Ajouter</button>
-  <button @click="decrement">Enlever</button>
-  <hr>
-  <button @click="sortMovies">Réorganiser</button>
-  <form @submit.prevent="handleAddMovie">
-    <input v-model="moviename" type="text" name="movie" id="moviename" placeholder="Nom du film">
-    <input v-model="movieduration" type="text" name="duration" id="movieduration" placeholder="Durée du film en minutes">
-
+  <h1>Todolist VueJS Grafikart</h1>
+  <form @submit.prevent="handleSubmit">
+    <input v-model="addtask" type="text" name="addtask" id="addtask">
     <button type="submit">Ajouter</button>
   </form>
+
+  <h2>Tâches</h2>
   <ul>
-    <li v-for="movie in movies" :key="movie.name">
-      Nom : {{ movie.name }} dure {{ Math.floor(movie.duration / 60) }}h
-      <button @click="deleteMovie(movie)">Supprimer</button>
-    </li>
+    <template v-for="todo in todolist" :key="`todo-${todo.date}-${todo.title}`">
+      <li v-if="todo.completed == false || todo.completed && showCompleted">
+        <input @change="sortList" v-model="todo.completed" type="checkbox" :name="`todo-${todo.date}-${todo.title}`" :id="`todo-${todo.date}-${todo.title}`">
+        <label :for="`todo-${todo.date}-${todo.title}`" :style="{textDecoration: todo.completed ? 'line-through' : ''}">{{ todo.title }}</label>
+      </li>
+    </template>
   </ul>
+  <input v-model="showCompleted" type="checkbox" id="toggleDoneTodo"/>
+  <label  for="toggleDoneTodo">Voir les tâches complétées</label>
 </template>
 
 <style scoped></style>
